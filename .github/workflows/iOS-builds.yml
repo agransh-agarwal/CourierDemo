@@ -1,0 +1,28 @@
+name: iOS build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Use newest Xcode on the runner
+        run: |
+          ls -d /Applications/Xcode*.app
+          sudo xcode-select -s "$(ls -d /Applications/Xcode*.app | sort -V | tail -n 1)"
+          xcodebuild -version
+
+      - name: Build app for iOS Simulator
+        run: |
+          xcodebuild build \
+            -project CourierDemo.xcodeproj \
+            -target CourierDemo \
+            -sdk iphonesimulator \
+            CODE_SIGNING_ALLOWED=NO
